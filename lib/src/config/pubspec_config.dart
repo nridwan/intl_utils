@@ -1,3 +1,4 @@
+import 'package:intl_utils/src/constants/constants.dart';
 import 'package:yaml/yaml.dart' as yaml;
 
 import '../utils/file_utils.dart';
@@ -14,6 +15,7 @@ class PubspecConfig {
   String? _implements;
   List<String>? _imports;
   LocalizelyConfig? _localizelyConfig;
+  SyncConfig? _syncConfig;
 
   PubspecConfig() {
     var pubspecFile = getPubspecFile();
@@ -63,6 +65,7 @@ class PubspecConfig {
         : null;
     _localizelyConfig =
         LocalizelyConfig.fromConfig(flutterIntlConfig['localizely']);
+    _syncConfig = SyncConfig.fromConfig(flutterIntlConfig['sync']);
   }
 
   bool? get enabled => _enabled;
@@ -82,6 +85,7 @@ class PubspecConfig {
   List<String>? get imports => _imports;
 
   LocalizelyConfig? get localizelyConfig => _localizelyConfig;
+  SyncConfig? get syncConfig => _syncConfig;
 }
 
 class LocalizelyConfig {
@@ -160,4 +164,34 @@ class LocalizelyConfig {
   List<String>? get downloadExcludeTags => _downloadExcludeTags;
 
   bool? get otaEnabled => _otaEnabled;
+}
+
+class SyncConfig {
+  Map<String, SyncPackage> _packages = {};
+
+  SyncConfig.fromConfig(yaml.YamlMap? syncConfig) {
+    if (syncConfig == null) {
+      return;
+    }
+
+    _packages = syncConfig
+        .map((key, value) => MapEntry(key, SyncPackage.fromConfig(value)));
+  }
+
+  Map<String, SyncPackage> get packages => _packages;
+}
+
+class SyncPackage {
+  String _path = defaultArbDir;
+
+  SyncPackage.fromConfig(yaml.YamlMap? syncPackage) {
+    if (syncPackage == null) {
+      return;
+    }
+    if (syncPackage['arb_dir'] is String) {
+      _path = syncPackage['arb_dir'];
+    }
+  }
+
+  String? get path => _path;
 }

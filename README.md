@@ -23,6 +23,14 @@ flutter_intl:
   arb_dir: lib/l10n # Optional. Sets the directory of your ARB resource files. Provided value should be a valid path on your system. Default: lib/l10n
   output_dir: lib/generated # Optional. Sets the directory of generated localization files. Provided value should be a valid path on your system. Default: lib/generated
   use_deferred_loading: false # Optional. Must be set to true to generate localization code that is loaded with deferred loading. Default: false
+  is_abstract: false # Optional. set if you need to generate abstract class for module localization. Default: false
+  implements: SomeClassName # Optional. set if you need to add implements to generated class, to support overriding module translation. Default: not set
+  imports: # Optional, add import directives to generated class, possible adding aliases, to support overriding module translation. Default: not set
+    - "'package:somepackagename/somepackagename.dart'"
+  sync: # Enable sync arb with 3rd party module that use abstract intl_utils implementation, new key will be added to main module arb
+    somemodule:
+    anothermodule:
+      arb_dir: lib/l10n # Optional. Sets the directory of your ARB resource files. Provided value should be a valid path on your system. Default: lib/l10n
   localizely: # Optional settings if you use Localizely platform. Read more: https://localizely.com/blog/flutter-localization-step-by-step/?tab=automated-using-flutter-intl
     project_id: # Get it from the https://app.localizely.com/projects page.
     branch: # Get it from the “Branches” page on the Localizely platform, in case branching is enabled and you want to use a non-main branch.
