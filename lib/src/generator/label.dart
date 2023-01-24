@@ -402,6 +402,91 @@ class Label {
     }
   }
 
+  /// Generates label getter for abstract class.
+  String generateDartGetterAbstract() {
+    try {
+      var parsedContent = parser.parse(content);
+      if (parsedContent == null) {
+        throw ParseException();
+      }
+
+      var args = _getArgs(placeholders, parsedContent);
+      var contentType = _getContentType(parsedContent, args);
+
+      var isValid = _validate(name, content, args);
+      if (!isValid) {
+        throw ValidationException();
+      }
+
+      switch (contentType) {
+        case ContentType.literal:
+          {
+            return [_generateDartDoc(), '  String get $name;'].join('\n');
+          }
+        default:
+          {
+            return [
+              _generateDartDoc(),
+              '  String $name(${_generateDartMethodParameters(args)});'
+            ].join('\n');
+          }
+      }
+    } catch (e) {
+      if (e is PlaceholderException) {
+        error(e.message);
+      } else if (e is! ValidationException) {
+        error("The '$name' key will be ignored due to parsing errors.");
+      }
+
+      return "  // skipped getter for the '${_escape(name)}' key";
+    }
+  }
+
+  /// Generates label getter default implementation for abstract class.
+  String generateDartGetterAbstractImpl() {
+    try {
+      var parsedContent = parser.parse(content);
+      if (parsedContent == null) {
+        throw ParseException();
+      }
+
+      var args = _getArgs(placeholders, parsedContent);
+      var contentType = _getContentType(parsedContent, args);
+
+      var isValid = _validate(name, content, args);
+      if (!isValid) {
+        throw ValidationException();
+      }
+
+      switch (contentType) {
+        case ContentType.literal:
+          {
+            return [
+              _generateDartDoc(),
+              '  @override',
+              '  String get $name => "$name";'
+            ].join('\n');
+          }
+        default:
+          {
+            return [
+              _generateDartDoc(),
+              '  @override',
+              '  String $name(${_generateDartMethodParameters(args)}) => "$name";'
+            ].join('\n');
+          }
+      }
+    } catch (e) {
+      if (e is PlaceholderException) {
+        error(e.message);
+      } else if (e is! ValidationException) {
+        error("The '$name' key will be ignored due to parsing errors.");
+      }
+
+      return "  // skipped getter for the '${_escape(name)}' key";
+    }
+  }
+
   /// Generates label metadata.
   String generateMetadata() {
     try {

@@ -9,3 +9,6 @@ const defaultUploadOverwrite = false;
 const defaultUploadAsReviewed = false;
 const defaultDownloadEmptyAs = 'empty';
 const defaultOtaEnabled = false;
+const defaultIsAbstract = false;
+const defaultImplements = '';
+const List<String> defaultImports = [];

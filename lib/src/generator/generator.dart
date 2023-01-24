@@ -16,6 +16,9 @@ class Generator {
   late String _arbDir;
   late String _outputDir;
   late bool _useDeferredLoading;
+  late bool _isAbstract;
+  late String _implementsArg;
+  late List<String> _imports;
   late bool _otaEnabled;
 
   /// Creates a new generator with configuration from the 'pubspec.yaml' file.
@@ -65,6 +68,11 @@ class Generator {
     _useDeferredLoading =
         pubspecConfig.useDeferredLoading ?? defaultUseDeferredLoading;
 
+    //modular options
+    _isAbstract = pubspecConfig.isAbstract ?? defaultIsAbstract;
+    _implementsArg = pubspecConfig.implementsArg ?? defaultImplements;
+    _imports = pubspecConfig.imports ?? defaultImports;
+
     _otaEnabled =
         pubspecConfig.localizelyConfig?.otaEnabled ?? defaultOtaEnabled;
   }
@@ -73,7 +81,7 @@ class Generator {
   Future<void> generateAsync() async {
     await _updateL10nDir();
     await _updateGeneratedDir();
-    await _generateDartFiles();
+    if (!_isAbstract) await _generateDartFiles();
   }
 
   Future<void> _updateL10nDir() async {
@@ -86,14 +94,16 @@ class Generator {
   Future<void> _updateGeneratedDir() async {
     var labels = _getLabelsFromMainArbFile();
     var locales = _orderLocales(getLocales(_arbDir));
-    var content =
-        generateL10nDartFileContent(_className, labels, locales, _otaEnabled);
+    var content = _isAbstract
+        ? generateL10nDartFileContentAbstract(_className, labels, locales)
+        : generateL10nDartFileContent(
+            _className, labels, locales, _otaEnabled, _implementsArg, _imports);
     var formattedContent = formatDartContent(content, 'l10n.dart');
 
     await updateL10nDartFile(formattedContent, _outputDir);
 
     var intlDir = getIntlDirectory(_outputDir);
-    if (intlDir == null) {
+    if (intlDir == null && !_isAbstract) {
       await createIntlDirectory(_outputDir);
     }
 

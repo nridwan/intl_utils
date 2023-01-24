@@ -2,13 +2,18 @@ import '../utils/utils.dart';
 import 'label.dart';
 
 String generateL10nDartFileContent(
-    String className, List<Label> labels, List<String> locales,
-    [bool otaEnabled = false]) {
+  String className,
+  List<Label> labels,
+  List<String> locales, [
+  bool otaEnabled = false,
+  String implementsArg = '',
+  List<String> imports = const [],
+]) {
   return """
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';${otaEnabled ? '\n${_generateLocalizelySdkImport()}' : ''}
-import 'intl/messages_all.dart';
+import 'intl/messages_all.dart';${_generateImports(imports)}
 
 // **************************************************************************
 // Generator: Flutter Intl IDE plugin
@@ -19,7 +24,7 @@ import 'intl/messages_all.dart';
 // ignore_for_file: join_return_with_assignment, prefer_final_in_for_each
 // ignore_for_file: avoid_redundant_argument_values, avoid_escaping_inner_quotes
 
-class $className {
+class $className${_generateImplements(implementsArg)} {
   $className();
 
   static $className? _current;
@@ -73,14 +78,48 @@ ${locales.map((locale) => _generateLocale(locale)).join("\n")}
   @override
   bool shouldReload(AppLocalizationDelegate old) => false;
 
-  bool _isSupported(Locale locale) {
-    for (var supportedLocale in supportedLocales) {
-      if (supportedLocale.languageCode == locale.languageCode) {
-        return true;
-      }
-    }
-    return false;
+  bool _isSupported(Locale locale) => true;
+}
+"""
+      .trim();
+}
+
+String generateL10nDartFileContentAbstract(
+    String className, List<Label> labels, List<String> locales) {
+  return """
+// GENERATED CODE - DO NOT MODIFY BY HAND
+import 'package:flutter/material.dart';
+
+// **************************************************************************
+// Generator: Flutter Intl IDE plugin
+// Made by Localizely
+// **************************************************************************
+
+// ignore_for_file: non_constant_identifier_names, lines_longer_than_80_chars
+// ignore_for_file: join_return_with_assignment, prefer_final_in_for_each
+// ignore_for_file: avoid_redundant_argument_values, avoid_escaping_inner_quotes
+
+$className _defaultFinder(BuildContext context) => Default$className();
+
+abstract class $className {
+  static $className? Function(BuildContext context) _instanceFinder = _defaultFinder;
+
+  static $className of(BuildContext context) {
+    return maybeOf(context)!;
   }
+
+  static $className? maybeOf(BuildContext context) {
+    return _instanceFinder(context);
+  }
+
+  static setFinder([$className? Function(BuildContext context) finder = _defaultFinder]) {
+    _instanceFinder = finder;
+  }
+${labels.map((label) => label.generateDartGetterAbstract()).join("\n\n")}
+}
+
+class Default$className implements $className {
+${labels.map((label) => label.generateDartGetterAbstractImpl()).join("\n\n")}
 }
 """
       .trim();
@@ -118,4 +157,13 @@ String _generateMetadata(List<Label> labels) {
     labels.map((label) => label.generateMetadata()).join(',\n'),
     '  };'
   ].join('\n');
+}
+
+String _generateImports(List<String> imports) {
+  return imports.map((import) => "import $import;").join('\n') +
+      (imports.isEmpty ? '' : '\n');
+}
+
+String _generateImplements(String implementsArg) {
+  return implementsArg.isEmpty ? '' : ' implements $implementsArg';
 }

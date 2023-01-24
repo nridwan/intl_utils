@@ -10,6 +10,9 @@ class PubspecConfig {
   String? _arbDir;
   String? _outputDir;
   bool? _useDeferredLoading;
+  bool? _isAbstract;
+  String? _implements;
+  List<String>? _imports;
   LocalizelyConfig? _localizelyConfig;
 
   PubspecConfig() {
@@ -49,6 +52,15 @@ class PubspecConfig {
     _useDeferredLoading = flutterIntlConfig['use_deferred_loading'] is bool
         ? flutterIntlConfig['use_deferred_loading']
         : null;
+    _isAbstract = flutterIntlConfig['is_abstract'] is bool
+        ? flutterIntlConfig['is_abstract']
+        : null;
+    _implements = flutterIntlConfig['implements'] is String
+        ? flutterIntlConfig['implements']
+        : null;
+    _imports = flutterIntlConfig['imports'] is yaml.YamlList
+        ? List<String>.from(flutterIntlConfig['imports'])
+        : null;
     _localizelyConfig =
         LocalizelyConfig.fromConfig(flutterIntlConfig['localizely']);
   }
@@ -64,6 +76,10 @@ class PubspecConfig {
   String? get outputDir => _outputDir;
 
   bool? get useDeferredLoading => _useDeferredLoading;
+
+  bool? get isAbstract => _isAbstract;
+  String? get implementsArg => _implements;
+  List<String>? get imports => _imports;
 
   LocalizelyConfig? get localizelyConfig => _localizelyConfig;
 }
