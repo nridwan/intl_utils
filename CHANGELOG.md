@@ -5,6 +5,14 @@ All notable changes to the "flutter-intl" extension will be documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0 - 2023-02-12
+
+- feat: add parameter is_abstract, implements, imports
+  - is_abstract: generate abstract class if true
+  - implements: add implements to generated class
+  - imports: add imports to generated class
+- feat: add sync translation feature across module
+
 ## 2.8.1 - 2022-11-17
 
 - Fix black frames caused by async initialization of localization messages when deferred loading is not enabled
